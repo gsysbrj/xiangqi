@@ -96,9 +96,9 @@ function displayMoveDesc(m: MoveDesc) {
       return `${label}${n2.charAt(c1)}平${n2.charAt(c2)}`
     }
     if (r1 < r2) {
-      return `${label}${n2.charAt(c1)}进${n2.charAt(r2-r1)}`
+      return `${label}${n2.charAt(c1)}进${n2.charAt(r2-r1-1)}`
     } else {
-      return `${label}${n2.charAt(c1)}退${n2.charAt(r1-r2)}`
+      return `${label}${n2.charAt(c1)}退${n2.charAt(r1-r2-1)}`
     }
   } else {
     const c1 = m.from % 9
@@ -109,9 +109,9 @@ function displayMoveDesc(m: MoveDesc) {
       return `${label}${n3.charAt(c1)}平${n3.charAt(c2)}`
     }
     if (r1 < r2) {
-      return `${label}${n3.charAt(c1)}进${n3.charAt(r2-r1)}`
+      return `${label}${n3.charAt(c1)}进${n3.charAt(r2-r1-1)}`
     } else {
-      return `${label}${n3.charAt(c1)}退${n3.charAt(r1-r2)}`
+      return `${label}${n3.charAt(c1)}退${n3.charAt(r1-r2-1)}`
     }
   }
 }
