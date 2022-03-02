@@ -1,12 +1,20 @@
 <script setup lang="ts">
 import Qizi from "@/components/Qizi.vue";
-import { ref } from "vue";
+import { computed, ref } from "vue";
+import {computeAvailableLocations } from "@/movesCompute"
+import type { QiziDesc } from "@/movesCompute"
 
-interface QiziDesc { label: string, side: 'red'|'black' }
 interface MoveDesc { qizi: QiziDesc, from: number, to: number }
 
 const grabbing = ref(-1)
 const lastMove = ref(-1)
+const availableMoveLocations = computed<number[]>(() => {
+  if (grabbing.value < 0) {
+    return []
+  }
+  const qizi = situation[grabbing.value]
+  return computeAvailableLocations(grabbing.value, qizi, situation)
+})
 
 const situation: QiziDesc[] = []
 situation[0] = {label: '車', side: 'black'}
@@ -30,8 +38,8 @@ situation[56] = {label: '兵', side: 'red'}
 situation[58] = {label: '兵', side: 'red'}
 situation[60] = {label: '兵', side: 'red'}
 situation[62] = {label: '兵', side: 'red'}
-situation[64] = {label: '砲', side: 'red'}
-situation[70] = {label: '砲', side: 'red'}
+situation[64] = {label: '炮', side: 'red'}
+situation[70] = {label: '炮', side: 'red'}
 situation[81] = {label: '車', side: 'red'}
 situation[82] = {label: '馬', side: 'red'}
 situation[83] = {label: '相', side: 'red'}
@@ -53,8 +61,10 @@ const changeGrabbingOrMoveQizi = (locationIndex: number) => {
       grabbing.value = locationIndex
       return
     }
-    // TODO 吃子规则判断
-    // TODO 走子规则判断
+    // TODO 吃子(走子)规则判断
+    if (!availableMoveLocations.value.includes(locationIndex)) {
+      return
+    }
     situation[locationIndex] = situation[grabbing.value]
     delete situation[grabbing.value]
     moves.value.push({
@@ -121,7 +131,9 @@ function displayMoveDesc(m: MoveDesc) {
   <div class="qipan-view">   
     <div class="qipan">
       <div v-for="n in 90" class="location-box">
-        <div class="location">
+        <div class="location" :class="{
+          available: availableMoveLocations.includes(n - 1)
+        }">
           <div>
             <div v-if="[20, 26, 65, 71, 30, 32, 34, 36, 57, 59, 61, 63].includes(n)" style="border-bottom: 1.5px solid blueviolet;border-right:1.5px solid blueviolet;height: 30%; width: 30%;position: absolute;bottom: 2px; right: 2px;"></div>
           </div>
@@ -274,6 +286,25 @@ function displayMoveDesc(m: MoveDesc) {
         display: grid;
         grid-template-columns: 50% 50%;
         grid-template-rows: 50% 50%;
+        &.available {
+          $color1: rgb(58, 248, 51);
+          > div:nth-child(1) {
+            border-right-color: $color1;
+            border-bottom-color:  $color1;
+          }
+          > div:nth-child(2) {
+            border-left-color:  $color1;
+            border-bottom-color:  $color1;
+          }
+          > div:nth-child(3) {
+            border-right-color:  $color1;
+            border-top-color:  $color1;
+          }
+          > div:nth-child(4) {
+            border-left-color:  $color1;
+            border-top-color:  $color1;
+          }
+        }
         > div:nth-child(1) {
           border-right: 1px solid blueviolet;
           border-bottom: 1px solid blueviolet;
