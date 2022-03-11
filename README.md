@@ -1,6 +1,6 @@
 # xiangqi
 
-This template should help get you started developing with Vue 3 in Vite.
+纯HTML、CSS实现棋盘和棋子。自适应屏幕大小。纯JavaScript实现走棋和吃子。
 <img width="878" alt="image" src="https://user-images.githubusercontent.com/81964234/157832334-c1412bce-29c6-4bde-8914-c847b3e147ae.png">
 
 
