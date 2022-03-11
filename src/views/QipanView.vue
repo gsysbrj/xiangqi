@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Qizi from "@/components/Qizi.vue";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import {computeAvailableLocations } from "@/movesCompute"
 import type { QiziDesc } from "@/movesCompute"
 
@@ -12,43 +12,50 @@ const availableMoveLocations = computed<number[]>(() => {
   if (grabbing.value < 0) {
     return []
   }
-  const qizi = situation[grabbing.value]
-  return computeAvailableLocations(grabbing.value, qizi, situation)
+  const qizi = situation.value[grabbing.value]
+  return computeAvailableLocations(grabbing.value, qizi, situation.value)
 })
 
-const situation: QiziDesc[] = []
-situation[0] = {label: '車', side: 'black'}
-situation[1] = {label: '馬', side: 'black'}
-situation[2] = {label: '象', side: 'black'}
-situation[3] = {label: '士', side: 'black'}
-situation[4] = {label: '將', side: 'black'}
-situation[5] = {label: '士', side: 'black'}
-situation[6] = {label: '象', side: 'black'}
-situation[7] = {label: '馬', side: 'black'}
-situation[8] = {label: '車', side: 'black'}
-situation[19] = {label: '炮', side: 'black'}
-situation[25] = {label: '炮', side: 'black'}
-situation[27] = {label: '卒', side: 'black'}
-situation[29] = {label: '卒', side: 'black'}
-situation[31] = {label: '卒', side: 'black'}
-situation[33] = {label: '卒', side: 'black'}
-situation[35] = {label: '卒', side: 'black'}
-situation[54] = {label: '兵', side: 'red'}
-situation[56] = {label: '兵', side: 'red'}
-situation[58] = {label: '兵', side: 'red'}
-situation[60] = {label: '兵', side: 'red'}
-situation[62] = {label: '兵', side: 'red'}
-situation[64] = {label: '炮', side: 'red'}
-situation[70] = {label: '炮', side: 'red'}
-situation[81] = {label: '車', side: 'red'}
-situation[82] = {label: '馬', side: 'red'}
-situation[83] = {label: '相', side: 'red'}
-situation[84] = {label: '仕', side: 'red'}
-situation[85] = {label: '帥', side: 'red'}
-situation[86] = {label: '仕', side: 'red'}
-situation[87] = {label: '相', side: 'red'}
-situation[88] = {label: '馬', side: 'red'}
-situation[89] = {label: '車', side: 'red'}
+const situations: QiziDesc[][] = []
+const situation = ref([] as QiziDesc[])
+situation.value[0] = {label: '車', side: 'black'}
+situation.value[1] = {label: '馬', side: 'black'}
+situation.value[2] = {label: '象', side: 'black'}
+situation.value[3] = {label: '士', side: 'black'}
+situation.value[4] = {label: '將', side: 'black'}
+situation.value[5] = {label: '士', side: 'black'}
+situation.value[6] = {label: '象', side: 'black'}
+situation.value[7] = {label: '馬', side: 'black'}
+situation.value[8] = {label: '車', side: 'black'}
+situation.value[19] = {label: '炮', side: 'black'}
+situation.value[25] = {label: '炮', side: 'black'}
+situation.value[27] = {label: '卒', side: 'black'}
+situation.value[29] = {label: '卒', side: 'black'}
+situation.value[31] = {label: '卒', side: 'black'}
+situation.value[33] = {label: '卒', side: 'black'}
+situation.value[35] = {label: '卒', side: 'black'}
+situation.value[54] = {label: '兵', side: 'red'}
+situation.value[56] = {label: '兵', side: 'red'}
+situation.value[58] = {label: '兵', side: 'red'}
+situation.value[60] = {label: '兵', side: 'red'}
+situation.value[62] = {label: '兵', side: 'red'}
+situation.value[64] = {label: '炮', side: 'red'}
+situation.value[70] = {label: '炮', side: 'red'}
+situation.value[81] = {label: '車', side: 'red'}
+situation.value[82] = {label: '馬', side: 'red'}
+situation.value[83] = {label: '相', side: 'red'}
+situation.value[84] = {label: '仕', side: 'red'}
+situation.value[85] = {label: '帥', side: 'red'}
+situation.value[86] = {label: '仕', side: 'red'}
+situation.value[87] = {label: '相', side: 'red'}
+situation.value[88] = {label: '馬', side: 'red'}
+situation.value[89] = {label: '車', side: 'red'}
+
+situations.push(situation.value.slice())
+const moveIndex = ref(-1)
+watch(moveIndex, () => {
+  situation.value.splice(0, 90, ...situations[moveIndex.value + 1])
+})
 
 const moves = ref([] as MoveDesc[])
 
@@ -57,23 +64,26 @@ const changeGrabbingOrMoveQizi = (locationIndex: number) => {
   // 走子(含吃子)
   if (grabbing.value !== -1 && grabbing.value !== locationIndex) {
     // 禁止吃自己的棋子(处理为换抓子)
-    if (situation[grabbing.value].side === situation[locationIndex]?.side) {
+    if (situation.value[grabbing.value].side === situation.value[locationIndex]?.side) {
       grabbing.value = locationIndex
       return
     }
     // TODO 吃子(走子)规则判断
+    console.log(`availableMoveLocations: `, availableMoveLocations.value)
     if (!availableMoveLocations.value.includes(locationIndex)) {
       return
     }
-    situation[locationIndex] = situation[grabbing.value]
-    delete situation[grabbing.value]
+    situation.value[locationIndex] = situation.value[grabbing.value]
+    delete situation.value[grabbing.value]
     moves.value.push({
-      qizi: situation[locationIndex],
+      qizi: situation.value[locationIndex],
       from: grabbing.value,
       to: locationIndex,
     })
     grabbing.value = -1
     lastMove.value = locationIndex
+    situations.push(situation.value.slice())
+    moveIndex.value = moves.value.length - 1
     return
   }
   // 抓子
@@ -83,10 +93,10 @@ const changeGrabbingOrMoveQizi = (locationIndex: number) => {
     return
   } else {
     // 禁止一方走子后再抓子
-    if (lastMove.value !== -1 && situation[lastMove.value]?.side === situation[locationIndex]?.side) {
+    if (lastMove.value !== -1 && situation.value[lastMove.value]?.side === situation.value[locationIndex]?.side) {
       return
     }
-    if (situation[locationIndex]) {
+    if (situation.value[locationIndex]) {
       grabbing.value = locationIndex
     }
   }
@@ -168,7 +178,10 @@ function displayMoveDesc(m: MoveDesc) {
       </div>
     </div>
     <div class="qipu">
-      <div class="move" v-for="(m, index) in moves">
+      <div class="move" @click="moveIndex = -1"><span>起始</span></div>
+      <div v-for="(m, index) in moves" @click="moveIndex = index" class="move" :class="{
+        current: index === moveIndex,
+      }" >
         <span class="round" v-if="index % 2 === 0">{{index / 2 + 1}}. </span>
         <span>{{displayMoveDesc(m)}}</span>
       </div>
@@ -224,17 +237,20 @@ function displayMoveDesc(m: MoveDesc) {
       margin-bottom: 2px;
     }
     .move {
-      padding-left: 16px;
+      padding-left: 25px;
       width: 100px;
       cursor: pointer;
       .round {
         position: absolute;
         left:0;
         top:0;
-        width: 10px;
+        width: 20px;
         text-align: right;
       }
       &:hover {
+        background-color: lightblue;
+      }
+      &.current {
         background-color: lightblue;
       }
     }
