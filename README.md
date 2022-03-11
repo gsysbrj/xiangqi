@@ -1,6 +1,8 @@
 # xiangqi
 
 This template should help get you started developing with Vue 3 in Vite.
+<img width="878" alt="image" src="https://user-images.githubusercontent.com/81964234/157832334-c1412bce-29c6-4bde-8914-c847b3e147ae.png">
+
 
 ## Recommended IDE Setup
 
