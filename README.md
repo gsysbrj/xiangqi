@@ -2,7 +2,7 @@
 
 纯HTML、CSS实现棋盘和棋子。自适应屏幕大小。纯JavaScript实现走棋和吃子。
 
-<img width="815" alt="image" src="https://user-images.githubusercontent.com/81964234/158813771-931d9902-71b2-4edb-bfe7-4f0e1ba5ed4b.png">
+![image](https://user-images.githubusercontent.com/81964234/158821423-d4e4c6b5-8f29-4523-8dab-638b3a416fba.png)
 
 
 ## Recommended IDE Setup
