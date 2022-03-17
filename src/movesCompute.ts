@@ -1,8 +1,10 @@
 export interface QiziDesc { label: string, side: 'red' | 'black' }
+
 interface Coord {
   x: number
   y: number
 }
+
 // 0,0在左上角
 function toCoord(location: number) {
   return {

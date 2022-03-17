@@ -58,6 +58,7 @@ watch(moveIndex, () => {
 })
 
 const moves = ref([] as MoveDesc[])
+const qipuBox = ref(null as unknown as HTMLDivElement)
 
 // 抓子或走子
 const changeGrabbingOrMoveQizi = (locationIndex: number) => {
@@ -80,6 +81,13 @@ const changeGrabbingOrMoveQizi = (locationIndex: number) => {
       from: grabbing.value,
       to: locationIndex,
     })
+    setTimeout(() => {
+      qipuBox.value.scrollBy({
+        top: 10000,
+        left: 0,
+        behavior: 'smooth'
+      })
+    }, 0)
     grabbing.value = -1
     lastMove.value = locationIndex
     situations.push(situation.value.slice())
@@ -115,6 +123,13 @@ function displayMoveDesc(m: MoveDesc) {
     if (r1 === r2) {
       return `${label}${n2.charAt(c1)}平${n2.charAt(c2)}`
     }
+    if ('馬相仕'.includes(label)) {
+      if (r1 < r2) {
+        return `${label}${n2.charAt(c1)}进${n2.charAt(c2)}`
+      } else {
+        return `${label}${n2.charAt(c1)}退${n2.charAt(c2)}`
+      }
+    }
     if (r1 < r2) {
       return `${label}${n2.charAt(c1)}进${n2.charAt(r2-r1-1)}`
     } else {
@@ -127,6 +142,13 @@ function displayMoveDesc(m: MoveDesc) {
     const r2 = Math.floor(m.to / 9)
     if (r1 === r2) {
       return `${label}${n3.charAt(c1)}平${n3.charAt(c2)}`
+    }
+    if ('馬象士'.includes(label)) {
+      if (r1 < r2) {
+        return `${label}${n3.charAt(c1)}进${n3.charAt(c2)}`
+      } else {
+        return `${label}${n3.charAt(c1)}退${n3.charAt(c2)}`
+      }
     }
     if (r1 < r2) {
       return `${label}${n3.charAt(c1)}进${n3.charAt(r2-r1-1)}`
@@ -177,7 +199,7 @@ function displayMoveDesc(m: MoveDesc) {
         </div>
       </div>
     </div>
-    <div class="qipu">
+    <div class="qipu" ref="qipuBox">
       <div class="move" @click="moveIndex = -1"><span>起始</span></div>
       <div v-for="(m, index) in moves" @click="moveIndex = index" class="move" :class="{
         current: index === moveIndex,
@@ -192,6 +214,7 @@ function displayMoveDesc(m: MoveDesc) {
 .qipan-view {
   display: grid;
   grid-template-columns: 3fr 2fr;
+  gap: 15px;
 }
   .shi-path {
     position: absolute;
